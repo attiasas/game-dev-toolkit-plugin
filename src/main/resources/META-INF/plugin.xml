@@ -1,18 +1,19 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.attiasas.gamedevtoolkitplugin</id>
-    <name>IntelliJ Platform Plugin game-dev-toolkit-plugin</name>
+    <id>com.attiasas.gamedevtoolkitplugin</id>
+    <name>Game Development Toolkit</name>
     <vendor>attiasas</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.attiasas.gamedevtoolkitplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.attiasas.gamedevtoolkitplugin.services.MyProjectService"/>
+        <toolWindow id="GDToolkit" anchor="bottom" icon="/icons/pluginIcon.svg"
+                    factoryClass="com.attiasas.gamedevtoolkitplugin.ui.GDToolWindowFactory" canCloseContents="false"/>
+
+        <applicationService serviceImplementation="com.attiasas.gamedevtoolkitplugin.log.Logger"/>
+
+        <notificationGroup id="GDT Errors" displayType="BALLOON" isLogByDefault="false"/>
+        <notificationGroup id="GDT Log" displayType="NONE" isLogByDefault="true"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.attiasas.gamedevtoolkitplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
