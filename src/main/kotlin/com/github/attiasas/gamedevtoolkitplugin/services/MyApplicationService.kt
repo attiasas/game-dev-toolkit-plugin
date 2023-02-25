@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.attiasas.gamedevtoolkitplugin.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.attiasas.gamedevtoolkitplugin.MyBundle
 
 class MyApplicationService {
 
