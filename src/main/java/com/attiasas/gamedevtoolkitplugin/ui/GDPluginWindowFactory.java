@@ -1,5 +1,7 @@
 package com.attiasas.gamedevtoolkitplugin.ui;
 
+import com.attiasas.gamedevtoolkitplugin.log.Logger;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -12,13 +14,17 @@ import org.jetbrains.annotations.NotNull;
  * @Author: Assaf, On 2/25/2023
  * @Description:
  **/
-public class GDToolWindowFactory implements ToolWindowFactory {
+public class GDPluginWindowFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        ContentManager contentManager = toolWindow.getContentManager();
-        BaseToolWindow baseToolWindow = new BaseToolWindow(project);
-        addContentTab(contentManager,baseToolWindow);
+        DumbService.getInstance(project).runWhenSmart(() -> {
+            Logger logger = Logger.getInstance();
+            logger.info("Creating GD windows from factory");
+
+            ContentManager contentManager = toolWindow.getContentManager();
+            addContentTab(contentManager, new ProjectWindowTab(project));
+        });
     }
 
     private void addContentTab(ContentManager contentManager, AbstractToolWindow toolWindow) {

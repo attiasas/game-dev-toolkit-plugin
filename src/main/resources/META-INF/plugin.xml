@@ -8,9 +8,11 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="GDToolkit" anchor="bottom" icon="/icons/pluginIcon.svg"
-                    factoryClass="com.attiasas.gamedevtoolkitplugin.ui.GDToolWindowFactory" canCloseContents="false"/>
+                    factoryClass="com.attiasas.gamedevtoolkitplugin.ui.GDPluginWindowFactory" canCloseContents="false"/>
 
         <applicationService serviceImplementation="com.attiasas.gamedevtoolkitplugin.log.Logger"/>
+
+        <projectService serviceImplementation="com.attiasas.gamedevtoolkitplugin.projects.GDProjectDecoder"/>
 
         <notificationGroup id="GDT Errors" displayType="BALLOON" isLogByDefault="false"/>
         <notificationGroup id="GDT Log" displayType="NONE" isLogByDefault="true"/>
