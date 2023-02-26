@@ -11,4 +11,8 @@ public class GradleProject {
     public GradleProject(Project project) {
 
     }
+
+    public static GradleProject decode(Project project) {
+        return new GradleProject(project);
+    }
 }
