@@ -6,13 +6,13 @@ import com.intellij.openapi.project.Project;
  * @Author: Assaf, On 2/25/2023
  * @Description:
  **/
-public class GradleProject {
+public class LibGDXProject {
 
-    public GradleProject(Project project) {
+    public LibGDXProject(Project project) {
 
     }
 
-    public static GradleProject decode(Project project) {
-        return new GradleProject(project);
+    public static LibGDXProject decode(Project project) {
+        return new LibGDXProject(project);
     }
 }

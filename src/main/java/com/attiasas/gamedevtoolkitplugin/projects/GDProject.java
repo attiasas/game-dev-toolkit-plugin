@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
  **/
 public class GDProject {
 
-    public GDProject(GradleProject gradleProject) {
+    public GDProject(LibGDXProject libGDXProject) {
 
     }
 
