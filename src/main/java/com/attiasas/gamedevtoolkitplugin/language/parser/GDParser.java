@@ -1,4 +1,4 @@
-package com.attiasas.gamedevtoolkitplugin.parser;
+package com.attiasas.gamedevtoolkitplugin.language.parser;
 
 /**
  * @Author: Assaf, On 2/28/2023

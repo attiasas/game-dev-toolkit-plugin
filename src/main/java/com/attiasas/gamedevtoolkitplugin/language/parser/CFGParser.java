@@ -1,4 +1,4 @@
-package com.attiasas.gamedevtoolkitplugin.parser;
+package com.attiasas.gamedevtoolkitplugin.language.parser;
 
 import java.util.*;
 

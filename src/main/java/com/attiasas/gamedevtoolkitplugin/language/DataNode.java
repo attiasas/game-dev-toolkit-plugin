@@ -1,4 +1,4 @@
-package com.attiasas.gamedevtoolkitplugin.parser;
+package com.attiasas.gamedevtoolkitplugin.language;
 
 
 import com.attiasas.gamedevtoolkitplugin.utils.Pair;
@@ -25,11 +25,20 @@ public class DataNode implements Iterable {
     }
 
     private final ObjectReference myContainer;
-    private List<Object> content = new ArrayList<>(); // single value or an ordered list of values
-    private Map<String, ObjectReference> objectReferences = new HashMap<>(); // attribute indicator (name) -> object
+    // single value or an ordered list of values
+    private List<Object> content;
+    // attribute indicator (name) -> object
+    private Map<String, ObjectReference> objectReferences;
 
     public DataNode() {
         myContainer = new ObjectReference(this);
+        content = new ArrayList<>();
+        objectReferences = new HashMap<>();
+    }
+
+    public DataNode(String indicator) {
+        this();
+        myContainer.indicator = indicator;
     }
 
     // set/replace DataNode content
@@ -70,6 +79,13 @@ public class DataNode implements Iterable {
         if (primitiveContent instanceof DataNode) {
             return null;
         }
+        if (primitiveContent instanceof Object[]) {
+            for (Object obj : ((Object[]) primitiveContent)) {
+                this.content.add(index,obj);
+                index++;
+            }
+            return null;
+        }
         if (index == this.content.size()) {
             this.content.add(primitiveContent);
             return null;
@@ -92,7 +108,7 @@ public class DataNode implements Iterable {
         for (String indicator : indicators) {
             // add new object if not exists to allow creating object attributes dynamically with data.get("att.newData.other")
             if (!crawler.second.objectReferences.containsKey(indicator)) {
-                putOrReplace(crawler.second, indicator, new DataNode(),false);
+                putOrReplace(crawler.second, indicator, new DataNode(indicator),false);
             }
             crawler = crawler.second.objectReferences.get(indicator);
         }
@@ -194,15 +210,19 @@ public class DataNode implements Iterable {
     }
 
     public static void main(String[] args) {
-
         DataNode data = new DataNode();
+        // add single string
+        data.get("Version").set("1.0.0");
+        // add numbers
         data.get("TestName.age").set(16);
         data.get("TestName.height").set(1.66);
-
+        // add multiple objects
         DataNode friends = data.get("object2.friends");
         friends.get("Friend1Name.job").set("Developer");
+        // add arrays
+        friends.get("Friend1Name.numbers").set(new Integer[]{1,4,5});
         friends.get("Friend2Name.pets").add("cat","dog","frog");
-        System.out.println("Data:");
+
         System.out.println(data);
     }
 }

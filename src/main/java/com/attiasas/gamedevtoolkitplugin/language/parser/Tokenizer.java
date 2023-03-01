@@ -1,7 +1,8 @@
-package com.attiasas.gamedevtoolkitplugin.parser;
+package com.attiasas.gamedevtoolkitplugin.language.parser;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
  * @Author: Assaf, On 2/27/2023
  * @Description:
  **/
-public class Tokenizer implements Iterable {
+public class Tokenizer implements Iterable<String> {
 
     public List<String> tokens = new ArrayList<>();
     public final String[] delimiters;
@@ -21,12 +22,26 @@ public class Tokenizer implements Iterable {
         this.delimiters = delimiters != null && delimiters.length > 0 ? delimiters : new String[]{"\\s+"};
     }
 
-    public void tokenize(String text) {
-        this.tokens = Tokenizer.tokenize(text,this.delimiters);
+    public Tokenizer(Collection<String>... collections) {
+        int count = (int) Arrays.stream(collections).count();
+        delimiters = new String[count];
+        int i = 0;
+        for (Collection<String> collection : collections) {
+            for (String delimiter : collection) {
+                delimiters[i] = delimiter;
+                i++;
+            }
+        }
     }
 
-    public void tokenizeFile(String path) throws IOException {
-        this.tokens = Tokenizer.tokenize(new String(Files.readAllBytes(Paths.get(path))),this.delimiters);
+    public List<String> tokenize(String text) {
+        this.tokens = Tokenizer.tokenize(text,this.delimiters);
+        return new ArrayList<>(this.tokens);
+    }
+
+    public List<String> tokenize(Path path) throws IOException {
+        this.tokens = Tokenizer.tokenize(new String(Files.readAllBytes(path)),this.delimiters);
+        return new ArrayList<>(this.tokens);
     }
 
     public static List<String> tokenize(String line, String... delimiters) {
@@ -63,14 +78,18 @@ public class Tokenizer implements Iterable {
     }
 
     public static void main(String[] args) {
-        String test = "build.gradle.kts";
-        String[] regex = new String[]{"[ \\t\\r]+","\\{","\\}","\\(","\\)","\n"};
+        Path test = Paths.get("build.gradle.kts");
+        String[] regex = new String[]{"[\\s]+","\\{","\\}","\\(","\\)","\n"};
         try {
             Tokenizer tokenizer = new Tokenizer(regex);
-            tokenizer.tokenizeFile(test);
-            System.out.println("Text:\n" + new String(Files.readAllBytes(Paths.get(test))));
+            tokenizer.tokenize(test);
+            System.out.println("Text:\n" + new String(Files.readAllBytes(test)));
             System.out.println("");
             System.out.println("Tokens: " + tokenizer.tokens);
+            System.out.println("");
+            for (String token : tokenizer) {
+                System.out.println("" + token);
+            }
 //        String.join("| ", Arrays.stream(words)
 //                .map(String::trim)
 //                .toArray(String[]::new));
