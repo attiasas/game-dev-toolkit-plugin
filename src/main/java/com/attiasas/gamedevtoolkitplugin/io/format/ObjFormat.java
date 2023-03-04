@@ -36,8 +36,8 @@ public class ObjFormat implements IFormat<DataNode> {
         DataNode root = new DataNode("ObjectMeshData");
         DataNode vertices = root.get(VERTICES);
         int verticesCount = 1;
-        int textureCount = 0;
-        int normalCount = 0;
+        int textureCount = 1;
+        int normalCount = 1;
         DataNode faces = root.get(FACES);
         int facesCount = 0;
 
@@ -196,6 +196,7 @@ public class ObjFormat implements IFormat<DataNode> {
             DataNode data = format.parse(Paths.get("src/test/resources/stall.obj"));
             System.out.println("Total Counts: [vertex=" + data.get(VERTICES).size() + ", faces=" + data.get(FACES).size() + "]");
             System.out.println("Data:\n" + data);
+            System.out.println("toString:\n" + format.toString(data));
             Files.write(Paths.get("src/test/resources/myFileStall.obj"), format.toString(data).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
