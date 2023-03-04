@@ -1,0 +1,20 @@
+Version = 1.0.0
+TestName {
+	age = 16
+	height = 1.66
+}
+
+object2 {
+	friends {
+		Friend1Name {
+			job = Developer
+			numbers = 1, 4, 5
+		}
+
+		Friend2Name {
+			pets = cat, dog, frog
+		}
+
+	}
+
+}

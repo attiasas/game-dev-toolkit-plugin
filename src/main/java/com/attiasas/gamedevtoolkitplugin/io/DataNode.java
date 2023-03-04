@@ -1,7 +1,8 @@
-package com.attiasas.gamedevtoolkitplugin.language;
+package com.attiasas.gamedevtoolkitplugin.io;
 
 
 import com.attiasas.gamedevtoolkitplugin.utils.Pair;
+import com.attiasas.gamedevtoolkitplugin.utils.RegexBuilder;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -23,6 +24,8 @@ public class DataNode implements Iterable {
             this.indicator = indicator;
         }
     }
+
+    public static final String DEFAULT_ID_DELIMITER = new RegexBuilder().literal(".").build();
 
     private final ObjectReference myContainer;
     // single value or an ordered list of values
@@ -98,8 +101,26 @@ public class DataNode implements Iterable {
 
     public int size() { return this.content.size(); }
 
+    public boolean isEmpty() { return size() == 0; }
+
+    public boolean has(String... indicators) {
+        return has(Arrays.asList(indicators), DEFAULT_ID_DELIMITER);
+    }
+
+    public boolean has(List<String> indicators, String delimiterRegex) {
+        indicators = splitIndicators(indicators,delimiterRegex);
+        ObjectReference crawler = this.myContainer;
+        for (String indicator : indicators) {
+            crawler = crawler.second.objectReferences.get(indicator);
+            if (crawler == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public DataNode get(String... indicators) {
-        return get(Arrays.asList(indicators),"\\.");
+        return get(Arrays.asList(indicators),DEFAULT_ID_DELIMITER);
     }
 
     public DataNode get(List<String> indicators, String delimiterRegex) {
@@ -156,6 +177,10 @@ public class DataNode implements Iterable {
 
     public int getInt() {
         return Integer.parseInt(getString());
+    }
+
+    public String indicator() {
+        return myContainer.indicator;
     }
 
     @Override
