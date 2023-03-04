@@ -4,7 +4,7 @@
 ## New Feature ✨
 * <add changes here or remove>
 
-## Improvments 🛠
+## Improvements 🛠
 * <add changes here or remove>
 
 ## Bug fixes 🐛
