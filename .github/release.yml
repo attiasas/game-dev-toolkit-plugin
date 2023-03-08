@@ -1,6 +1,7 @@
 changelog:
   exclude:
     labels:
+      - ready
       - ignore for release
       - wontfix
       - invalid
