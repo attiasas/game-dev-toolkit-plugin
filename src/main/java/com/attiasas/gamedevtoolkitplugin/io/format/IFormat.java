@@ -43,6 +43,10 @@ public interface IFormat<T> {
             this.position = position;
         }
 
+        public FormatException(Tokenizer.Token token, String cause) {
+            this(token.token+ ": " + cause, token.line, token.position);
+        }
+
         public FormatException(Tokenizer.Token token, Throwable cause) {
             this(token.token, token.line, token.position, cause);
         }
