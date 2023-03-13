@@ -1,4 +1,4 @@
-package com.attiasas.gamedevtoolkitplugin.parser;
+package com.attiasas.gamedevtoolkitplugin.io;
 
 import java.io.IOException;
 import java.nio.file.Files;

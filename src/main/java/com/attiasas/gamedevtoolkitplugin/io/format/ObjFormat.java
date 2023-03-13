@@ -1,7 +1,7 @@
 package com.attiasas.gamedevtoolkitplugin.io.format;
 
 import com.attiasas.gamedevtoolkitplugin.io.DataNode;
-import com.attiasas.gamedevtoolkitplugin.parser.Tokenizer;
+import com.attiasas.gamedevtoolkitplugin.io.Tokenizer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

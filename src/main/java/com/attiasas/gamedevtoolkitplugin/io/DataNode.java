@@ -77,11 +77,10 @@ public class DataNode implements Iterable {
         }
     }
 
-    // set/replace content as array for all objects except DataNode
+    // set/replace content as array for all objects including anonymous DataNode
     public <T extends Object> T set(T primitiveContent, int index) {
-        if (primitiveContent instanceof DataNode) {
-            return null;
-        }
+        // TODO: change to store datanode (anonymus object or array), string, int or float
+        // TODO: if adding and objReference exist after need to update index that needed for remove, maybe change that
         if (primitiveContent instanceof Object[]) {
             for (Object obj : ((Object[]) primitiveContent)) {
                 this.content.add(index,obj);
@@ -163,20 +162,26 @@ public class DataNode implements Iterable {
         return get(0);
     }
 
+    public String getString(int index) { return get(index).toString(); }
+
     public String getString() {
-        return get().toString();
+        return getString(0);
+    }
+
+    public float getFloat(int index) {
+        return Float.parseFloat(getString(index));
     }
 
     public float getFloat() {
-        return Float.parseFloat(getString());
+        return getFloat(0);
     }
 
-    public double getDouble() {
-        return Double.parseDouble(getString());
+    public int getInt(int index) {
+        return Integer.parseInt(getString(index));
     }
 
     public int getInt() {
-        return Integer.parseInt(getString());
+        return getInt(0);
     }
 
     public String indicator() {
@@ -198,40 +203,95 @@ public class DataNode implements Iterable {
         return this.content.spliterator();
     }
 
-    public static String writeAsString(DataNode node, int indentLevel, String equalSymbol, String indent, String sep, String sepList, String surroundString, String startSurroundNode, String endSurroundNode, String endLine) {
+    public static String writeAsString(DataNode node, int indentLevel, String equalSymbol, String indent, String sep, String sepList, String surroundString, String startSurroundNode, String endSurroundNode, String startSurroundArray, String endSurroundArray, String endLine) {
         String agg = "";
         for (Object data : node.content) {
             if (data instanceof ObjectReference) {
                 ObjectReference reference = (ObjectReference) data;
                 DataNode child = reference.second;
-                int nItemsLeft = child.size();
                 if (child.objectReferences.size() == 0) {
-                    // The node is primitive or array
-                    agg += indent.repeat(indentLevel) + reference.indicator + sep + equalSymbol + sep;
-                    for (int i = 0; i < child.size(); i++) {
-                        boolean sepListExists = child.get(i).toString().indexOf(sepList) >= 0;
-                        agg += (sepListExists ? surroundString : "") + child.get(i).toString() + (sepListExists ? surroundString : "") + (nItemsLeft > 1 ? sepList + sep : "");
-                        nItemsLeft--;
+                    if (child.isEmpty()) {
+                        // Empty attribute
+                        agg += indent.repeat(indentLevel) + reference.indicator + endLine;
+                    } else {
+                        // The node is primitive or array
+                        agg += writeValuesAsString(child, reference.indicator, indentLevel, equalSymbol, indent, sep, sepList, surroundString, startSurroundNode, endSurroundNode, startSurroundArray, endSurroundArray, endLine);
                     }
-                    agg += endLine;
                 }
                 else {
                     // The node is object with data
-                    agg += indent.repeat(indentLevel) + reference.indicator + sep + startSurroundNode + endLine;
-                    agg += writeAsString(child,indentLevel + 1,equalSymbol,indent,sep,sepList,surroundString,startSurroundNode,endSurroundNode,endLine);
-                    agg += indent.repeat(indentLevel) + endSurroundNode + endLine;
-                    agg += endLine;
+                    agg += writeObjAsString(child,reference.indicator,indentLevel,equalSymbol,indent, sep, sepList, surroundString, startSurroundNode, endSurroundNode, startSurroundArray, endSurroundArray, endLine);
                 }
 
+            } else if (data instanceof DataNode) {
+                agg += writeAnonymousAsString((DataNode) data, indentLevel, equalSymbol, indent, sep, sepList, surroundString, startSurroundNode, endSurroundNode, startSurroundArray, endSurroundArray, endLine);
             }
-
         }
         return agg;
     }
 
+    private static String writeAnonymousAsString(DataNode node, int indentLevel, String equalSymbol, String indent, String sep, String sepList, String surroundString, String startSurroundNode, String endSurroundNode, String startSurroundArray, String endSurroundArray, String endLine) {
+        if (node.objectReferences.isEmpty()) {
+            // Anonymous array or primitive value of anonymous
+            return writeValuesAsString(node, null, indentLevel, equalSymbol, indent, sep, sepList, surroundString, startSurroundNode, endSurroundNode, startSurroundArray, endSurroundArray, endLine);
+        }
+        // Anonymous object
+        return writeObjAsString(node,null,indentLevel,equalSymbol,indent, sep, sepList, surroundString, startSurroundNode, endSurroundNode, startSurroundArray, endSurroundArray, endLine);
+    }
+
+    private static String writeObjAsString(DataNode child, String indicator, int indentLevel, String equalSymbol, String indent, String sep, String sepList, String surroundString, String startSurroundNode, String endSurroundNode, String startSurroundArray, String endSurroundArray, String endLine) {
+        String agg = indent.repeat(indentLevel) + (indicator != null ? indicator + sep : "") + startSurroundNode + endLine;
+        agg += writeAsString(child,indentLevel + 1,equalSymbol,indent,sep,sepList,surroundString,startSurroundNode,endSurroundNode, startSurroundArray, endSurroundArray, endLine);
+        agg += indent.repeat(indentLevel) + endSurroundNode + (indicator != null ? endLine : "");
+        return agg + (indicator != null ? endLine : "");
+    }
+
+    // Anonymous array or primitive value of anonymous
+    private static String writeValuesAsString(DataNode valueNode, String indicator, int indentLevel, String equalSymbol, String indent, String sep, String sepList, String surroundString, String startSurroundNode, String endSurroundNode, String startSurroundArray, String endSurroundArray, String endLine) {
+        int nItemsLeft = valueNode.size();
+        boolean hasNode = valueNode.content.stream().anyMatch(node -> node instanceof DataNode);
+        boolean prevNode = hasNode;
+        String agg = indent.repeat(indentLevel) + (indicator != null ? indicator + sep + equalSymbol + sep : "") + (nItemsLeft > 1 ? startSurroundArray : "");
+        for (int i = 0; i < valueNode.size(); i++) {
+            Object value = valueNode.get(i);
+            if (value instanceof DataNode) {
+                // Anonymous obj/array value
+                prevNode = true;
+                agg += endLine;
+                agg += writeAnonymousAsString((DataNode) value, indentLevel + 1, equalSymbol, indent, sep, sepList, surroundString, startSurroundNode, endSurroundNode, startSurroundArray, endSurroundArray, endLine);
+                agg += (nItemsLeft > 1 ? sepList + sep : "") + indent.repeat(indentLevel + (i == valueNode.size() - 1 ? 0 : 1));
+            } else {
+                // Primitive string/int/number
+                if (prevNode) {
+                    agg += endLine + indent.repeat(indentLevel + 1);
+                }
+                prevNode = false;
+                agg += getPrimitiveValue(value, surroundString) + (nItemsLeft > 1 ? sepList + sep : "");
+            }
+            nItemsLeft--;
+        }
+        return agg + (hasNode ? endLine + indent.repeat(indentLevel) : "") + (valueNode.size() > 1 ? endSurroundArray : "") + (indicator != null ? endLine : "");
+    }
+
+    private static String getPrimitiveValue(Object value, String surroundString) {
+        String asString = value.toString();
+        if ((value instanceof Float) || (value instanceof Integer)) {
+            return asString;
+        }
+        try {
+            Float.parseFloat(asString);
+            return asString;
+        } catch (Exception e) {}
+        try {
+            Integer.parseInt(asString);
+            return asString;
+        } catch (Exception e) {}
+        return surroundString + asString + surroundString;
+    }
+
     @Override
     public String toString() {
-        return writeAsString(this,0,"=","\t"," ",",","\"","{","}","\n");
+        return writeAsString(this,0,"=","\t"," ",",","\"","{","}", "[", "]","\n");
     }
 
     public static void main(String[] args) {

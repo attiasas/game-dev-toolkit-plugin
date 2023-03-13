@@ -1,6 +1,6 @@
 package com.attiasas.gamedevtoolkitplugin.io.format;
 
-import com.attiasas.gamedevtoolkitplugin.parser.Tokenizer;
+import com.attiasas.gamedevtoolkitplugin.io.Tokenizer;
 
 import java.io.IOException;
 import java.nio.file.Files;

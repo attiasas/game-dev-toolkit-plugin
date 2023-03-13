@@ -15,6 +15,7 @@ public class RegexBuilder {
     public final static String NUMBER = "-?\\d+(?:\\.\\d+)?";
     public final static String ALPHANUMERIC = "[a-zA-Z0-9]+";
     public final static String WHITESPACE = "\\s+";
+    public final static String WHITESPACE_EXCEPT_NEWLINE = "[^\\S\\n]+";
 
     public final static String FILES = "^(((\\\\/([a-zA-Z0-9_\\\\-\\\\.]+))+|(\\\\/))|(((\\\\w{1}):\\\\/([a-zA-Z0-9_\\\\-\\\\.]+))+|((\\\\\\\\\\\\\\\\[a-zA-Z0-9_\\\\-\\\\.]+(\\\\\\\\[a-zA-Z0-9_\\\\-\\\\.]+)+)))(\\\\/([a-zA-Z0-9_\\-\\.\\s])+)*$";
     public final static String URL = "^(?:https?|ftp):\\/\\/(?:\\S+(?::\\S*)?@)?(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(?::\\d{2,5})?(?:\\/\\S*)?";
@@ -25,6 +26,11 @@ public class RegexBuilder {
 
     public RegexBuilder() {
         builder = new StringBuilder();
+    }
+
+    public static String matchBetweenWithEscaping(String symbol) {
+        return Pattern.quote(symbol) + "([^" + Pattern.quote(symbol) + "\\\\]*(\\\\.[^" + Pattern.quote(symbol) + "\\\\]*)*)" + Pattern.quote(symbol);
+//        return symbol + "([^" + symbol + "\\\\]*(\\\\.[^" + symbol + "\\\\]*)*)" + symbol;
     }
 
     public static void main(String[] args) {
