@@ -5,6 +5,8 @@ package com.attiasas.gamedevtoolkitplugin.utils;
  * @Description:
  **/
 public class Constants {
+    public static final String PLUGIN_ID = "GDToolkit";
+
     public static final String TITLE = "GDT";
     public static final String ERROR_TITLE = TITLE + " - Error";
 
